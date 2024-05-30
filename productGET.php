@@ -5,7 +5,7 @@ header("Content-Type: application/json");
 
 include 'koneksi.php';
 
-$sql = "SELECT p.*, c.name as category
+$sql = "SELECT p.*, c.name as kategori
         FROM products p 
         JOIN category c ON p.id_category = c.id_category";
 $result = $koneksi->query($sql);
