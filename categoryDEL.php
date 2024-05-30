@@ -20,7 +20,6 @@ if ($isSuccess) {
     $res['message'] = "Gagal menghapus data user dengan ID $id_category";
 }
 
-// Mengirim respon dalam format JSON
 echo json_encode($res);
 
 ?>

@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
     // Query untuk mengambil total_amount dari tabel cart
     $sql_cart = "SELECT p.price, c.quantity 
-                 FROM charts c
+                 FROM chart c
                  JOIN products p ON c.id_product = p.id_product
                  WHERE c.user_id = ?";
     
