@@ -20,7 +20,7 @@ if ($isSuccess) {
 
     $res['is_success'] = true;
     $res['value'] = 1;
-    $res['message'] = "Berhasil edit data pegawai";
+    $res['message'] = "Berhasil edit data keranjang";
     $res['id_product'] = $result['id_product'];
     $res['quantity'] = $result['quantity'];
     $res['id_chart'] = $result['id_chart'];
