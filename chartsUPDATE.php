@@ -9,13 +9,13 @@ $id_chart = $_POST['id_chart'];
 $id_product = $_POST['id_product'];
 $quantity = $_POST['quantity'];
 
-$sql = "UPDATE chart SET id_product = '$id_product', quantity = '$quantity' WHERE id_chart=$id_chart";
+$sql = "UPDATE charts SET id_product = '$id_product', quantity = '$quantity' WHERE id_chart=$id_chart";
 $isSuccess = $koneksi->query($sql);
 
 
 $res = [];
 if ($isSuccess) {
-    $cek = "SELECT * FROM category WHERE id_chart = $id_chart";
+    $cek = "SELECT * FROM charts WHERE id_chart = $id_chart";
     $result = mysqli_fetch_assoc(mysqli_query($koneksi, $cek));
 
     $res['is_success'] = true;
