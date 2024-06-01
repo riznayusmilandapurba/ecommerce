@@ -5,10 +5,9 @@ header("Content-Type: application/json");
 
 include 'koneksi.php';
 
-$sql = "SELECT c.*, u.fullname as 'User', p.*
-        FROM myfavorite c 
-        JOIN users u ON c.id_user = u.id_user
-        JOIN products p ON c.id_product = p.id_product";
+$sql = "SELECT s.*, u.fullname as 'User'
+        FROM shipping_address s
+        JOIN users u ON s.id_user = u.id_user";
 
 $result = $koneksi->query($sql);
 
@@ -17,19 +16,19 @@ $response = array();
 if ($result) {
     if ($result->num_rows > 0) {
         $response['isSuccess'] = true;
-        $response['message'] = "Berhasil Menampilkan Data My Favorite";
+        $response['message'] = "Berhasil Menampilkan Data Delivery";
         $response['data'] = array();
         while ($row = $result->fetch_assoc()) {
             $response['data'][] = $row;
         }
     } else {
         $response['isSuccess'] = false;
-        $response['message'] = "Tidak Ada Data My Favorite";
+        $response['message'] = "Tidak Ada Data Delivery";
         $response['data'] = null;
     }
 } else {
     $response['isSuccess'] = false;
-    $response['message'] = "Gagal Menampilkan Data My Favorite: " . $koneksi->error;
+    $response['message'] = "Gagal Menampilkan Data Delivery: " . $koneksi->error;
     $response['data'] = null;
 }
 

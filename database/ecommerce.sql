@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 29 Bulan Mei 2024 pada 10.00
+-- Waktu pembuatan: 01 Jun 2024 pada 18.12
 -- Versi server: 10.4.19-MariaDB
 -- Versi PHP: 7.4.19
 
@@ -33,6 +33,14 @@ CREATE TABLE `category` (
   `description` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data untuk tabel `category`
+--
+
+INSERT INTO `category` (`id_category`, `name`, `description`) VALUES
+(1, 'Bag', 'Inspiring your solution'),
+(2, 'test', 'test');
+
 -- --------------------------------------------------------
 
 --
@@ -46,6 +54,13 @@ CREATE TABLE `charts` (
   `quantity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data untuk tabel `charts`
+--
+
+INSERT INTO `charts` (`id_chart`, `id_user`, `id_product`, `quantity`) VALUES
+(1, 2, 3, 4);
+
 -- --------------------------------------------------------
 
 --
@@ -58,6 +73,13 @@ CREATE TABLE `myfavorite` (
   `id_product` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data untuk tabel `myfavorite`
+--
+
+INSERT INTO `myfavorite` (`id_myfavorite`, `id_user`, `id_product`) VALUES
+(1, 2, 2);
+
 -- --------------------------------------------------------
 
 --
@@ -67,9 +89,21 @@ CREATE TABLE `myfavorite` (
 CREATE TABLE `orders` (
   `id_order` int(11) NOT NULL,
   `id_user` int(11) NOT NULL,
+  `delivery_address` text NOT NULL,
   `total_amount` decimal(10,0) NOT NULL,
   `status` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data untuk tabel `orders`
+--
+
+INSERT INTO `orders` (`id_order`, `id_user`, `delivery_address`, `total_amount`, `status`) VALUES
+(1, 2, 'test', '0', ''),
+(2, 2, 'test', '0', 'test'),
+(3, 2, 'test', '0', 'test'),
+(4, 2, 'test', '0', 'test'),
+(5, 2, 'test', '0', 'test');
 
 -- --------------------------------------------------------
 
@@ -115,6 +149,44 @@ CREATE TABLE `products` (
   `foto` varchar(250) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data untuk tabel `products`
+--
+
+INSERT INTO `products` (`id_product`, `name`, `description`, `price`, `stock`, `id_category`, `foto`) VALUES
+(1, 'NOELLE TOP ZIP SHOULDER BAG', 'ZG787918\nMaterial: Saffiano pu\nMeasurements: L:29 W: 6 H: 18 cm', '1.799', 4, 1, ''),
+(2, 'NOELLE TOP ZIP SHOULDER BAG', 'ZG787918\nMaterial: Saffiano pu\nMeasurements: L:29 W: 6 H: 18 cm', '179000', 4, 1, ''),
+(3, 'NOELLE TOP ZIP SHOULDER BAG', 'ZG787918\nMaterial: Saffiano pu\nMeasurements: L:29 W: 6 H: 18 cm', '179000', 4, 1, ''),
+(5, 'NOELLE TOP ZIP SHOULDER BAG', 'ZG787918\nMaterial: Saffiano pu\nMeasurements: L:29 W: 6 H: 18 cm', '179000', 4, 1, ''),
+(6, 'NOELLE TOP ZIP SHOULDER BAG', 'ZG787918\nMaterial: Saffiano pu\nMeasurements: L:29 W: 6 H: 18 cm', '179000', 4, 1, ''),
+(7, 'NOELLE TOP ZIP SHOULDER BAG', 'ZG787918\nMaterial: Saffiano pu\nMeasurements: L:29 W: 6 H: 18 cm', '179000', 4, 1, '');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `shipping_address`
+--
+
+CREATE TABLE `shipping_address` (
+  `id_shipping_address` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL,
+  `nama_pengirim` varchar(50) NOT NULL,
+  `nohp` varchar(12) NOT NULL,
+  `provinsi` varchar(100) NOT NULL,
+  `kota` varchar(100) NOT NULL,
+  `kecamatan` varchar(100) NOT NULL,
+  `kelurahan` varchar(100) NOT NULL,
+  `alamat_lengkap` text NOT NULL,
+  `kode_pos` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data untuk tabel `shipping_address`
+--
+
+INSERT INTO `shipping_address` (`id_shipping_address`, `id_user`, `nama_pengirim`, `nohp`, `provinsi`, `kota`, `kecamatan`, `kelurahan`, `alamat_lengkap`, `kode_pos`) VALUES
+(1, 2, 'Anda', '12345', 'sumatera utara', 'tebing tinggi', 'serdang bedagai', 'pabatu', 'jl. pulau sumatera', '567');
+
 -- --------------------------------------------------------
 
 --
@@ -137,7 +209,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id_user`, `fullname`, `email`, `password`, `phone`, `address`, `role`) VALUES
 (1, 'administrator', 'admin@gmail.com', '202cb962ac59075b964b07152d234b70', '082293763630', 'padang', '1'),
-(2, 'Rizna', 'rizna@gmail.com', '202cb962ac59075b964b07152d234b70', '082293763630', 'padang', '2');
+(2, 'Cakra', 'cakra@gmail.com', '202cb962ac59075b964b07152d234b70', '123', 'jakarta', '2'),
+(3, 'Anda', 'anda@gmail.com', '202cb962ac59075b964b07152d234b70', '082293763630', 'padang', '2');
 
 --
 -- Indexes for dumped tables
@@ -186,6 +259,12 @@ ALTER TABLE `products`
   ADD PRIMARY KEY (`id_product`);
 
 --
+-- Indeks untuk tabel `shipping_address`
+--
+ALTER TABLE `shipping_address`
+  ADD PRIMARY KEY (`id_shipping_address`);
+
+--
 -- Indeks untuk tabel `users`
 --
 ALTER TABLE `users`
@@ -199,25 +278,25 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT untuk tabel `category`
 --
 ALTER TABLE `category`
-  MODIFY `id_category` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_category` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `charts`
 --
 ALTER TABLE `charts`
-  MODIFY `id_chart` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_chart` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `myfavorite`
 --
 ALTER TABLE `myfavorite`
-  MODIFY `id_myfavorite` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_myfavorite` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id_order` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_order` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT untuk tabel `order_details`
@@ -235,13 +314,19 @@ ALTER TABLE `payments`
 -- AUTO_INCREMENT untuk tabel `products`
 --
 ALTER TABLE `products`
-  MODIFY `id_product` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_product` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT untuk tabel `shipping_address`
+--
+ALTER TABLE `shipping_address`
+  MODIFY `id_shipping_address` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `users`
 --
 ALTER TABLE `users`
-  MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
