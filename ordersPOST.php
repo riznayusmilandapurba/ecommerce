@@ -1,103 +1,91 @@
 <?php
-
-header("Access-Control-Allow-Origin: *");
-
 include 'koneksi.php';
 
-if ($_SERVER['REQUEST_METHOD'] == "POST") {
+$response = array();
 
-    $response = array();
-
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id_user = $_POST['id_user'];
-    $delivery_address = $_POST['delivery_address'];
-    $status = $_POST['status'];
 
-    // Query untuk mengambil total_amount dari tabel cart
-    $sql_cart = "SELECT p.price, c.quantity 
-                 FROM chart c
-                 JOIN products p ON c.id_product = p.id_product
-                 WHERE c.user_id = ?";
-    
-    // Persiapkan statement
-    $stmt_cart = mysqli_prepare($koneksi, $sql_cart);
+    // Start a transaction
+    mysqli_begin_transaction($koneksi);
 
-    if (!$stmt_cart) {
+    try {
+        // Fetch data from charts
+        $query = "SELECT * FROM charts WHERE id_user = ?";
+        $stmt = mysqli_prepare($koneksi, $query);
+        mysqli_stmt_bind_param($stmt, "i", $id_user);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        if (mysqli_num_rows($result) > 0) {
+            $total_amount = 0;
+            $order_details = array();
+
+            while ($row = mysqli_fetch_assoc($result)) {
+                $id_product = $row['id_product'];
+                $quantity = $row['quantity'];
+
+                // Get product price (assumed to be fetched from a products table)
+                $product_query = "SELECT price FROM products WHERE id_product = ?";
+                $product_stmt = mysqli_prepare($koneksi, $product_query);
+                mysqli_stmt_bind_param($product_stmt, "i", $id_product);
+                mysqli_stmt_execute($product_stmt);
+                $product_result = mysqli_stmt_get_result($product_stmt);
+                $product = mysqli_fetch_assoc($product_result);
+                $price = $product['price'];
+
+                $total_amount += $price * $quantity;
+
+                $order_details[] = array(
+                    'id_product' => $id_product,
+                    'quantity' => $quantity,
+                    'price' => $price
+                );
+            }
+
+            // Insert into orders
+            $order_query = "INSERT INTO orders (id_user, total_amount, status) VALUES (?, ?, 'Pending')";
+            $order_stmt = mysqli_prepare($koneksi, $order_query);
+            mysqli_stmt_bind_param($order_stmt, "id", $id_user, $total_amount);
+            mysqli_stmt_execute($order_stmt);
+            $id_order = mysqli_insert_id($koneksi);
+
+            // Insert into order_details
+            foreach ($order_details as $detail) {
+                $detail_query = "INSERT INTO order_details (id_order, id_product, quantity, price) VALUES (?, ?, ?, ?)";
+                $detail_stmt = mysqli_prepare($koneksi, $detail_query);
+                mysqli_stmt_bind_param($detail_stmt, "iiid", $id_order, $detail['id_product'], $detail['quantity'], $detail['price']);
+                mysqli_stmt_execute($detail_stmt);
+            }
+
+            // Delete from charts
+            $delete_query = "DELETE FROM charts WHERE id_user = ?";
+            $delete_stmt = mysqli_prepare($koneksi, $delete_query);
+            mysqli_stmt_bind_param($delete_stmt, "i", $id_user);
+            mysqli_stmt_execute($delete_stmt);
+
+            // Commit the transaction
+            mysqli_commit($koneksi);
+
+            $response['value'] = 1;
+            $response['message'] = "Order successfully created";
+        } else {
+            $response['value'] = 0;
+            $response['message'] = "No products in chart";
+        }
+    } catch (Exception $e) {
+        // Rollback the transaction if something failed
+        mysqli_rollback($koneksi);
+
         $response['value'] = 0;
-        $response['message'] = "Error: " . mysqli_error($koneksi);
-        echo json_encode($response);
-        exit;
-    }
-    
-    // Bind parameter
-    mysqli_stmt_bind_param($stmt_cart, "i", $id_user);
-    
-    // Eksekusi statement
-    $result_execute = mysqli_stmt_execute($stmt_cart);
-
-    if (!$result_execute) {
-        $response['value'] = 0;
-        $response['message'] = "Error: " . mysqli_error($koneksi);
-        echo json_encode($response);
-        exit;
-    }
-    
-    // Ambil hasil query
-    $result_cart = mysqli_stmt_get_result($stmt_cart);
-
-    if (!$result_cart) {
-        $response['value'] = 0;
-        $response['message'] = "Error: " . mysqli_error($koneksi);
-        echo json_encode($response);
-        exit;
-    }
-    
-    // Hitung total_amount
-    $total_amount = 0;
-
-    while ($row_cart = mysqli_fetch_assoc($result_cart)) {
-        $price = $row_cart['price'];
-        $quantity = $row_cart['quantity'];
-        
-        // Hitung total_amount untuk produk ini dan tambahkan ke total_amount
-        $total_amount += $price * $quantity;
+        $response['message'] = "Error: " . $e->getMessage();
     }
 
-    // Insert data ke dalam tabel orders menggunakan prepared statement
-    $sql_insert = "INSERT INTO orders (id_user, delivery_address, total_amount, status) 
-                   VALUES (?, ?, ?, ?)";
-    
-    // Persiapkan statement
-    $stmt_insert = mysqli_prepare($koneksi, $sql_insert);
-    
-    if (!$stmt_insert) {
-        $response['value'] = 0;
-        $response['message'] = "Error: " . mysqli_error($koneksi);
-        echo json_encode($response);
-        exit;
-    }
-    
-    // Bind parameter
-    mysqli_stmt_bind_param($stmt_insert, "isds", $id_user, $delivery_address, $total_amount, $status);
-    
-    // Eksekusi statement
-    $result_insert = mysqli_stmt_execute($stmt_insert);
-
-    if ($result_insert) {
-        $response['value'] = 1;
-        $response['message'] = "Berhasil Tambah Data";
-    } else {
-        $response['value'] = 0;
-        $response['message'] = "Tambah Data: " . mysqli_error($koneksi);
-    }
-
-    // Tutup statement
-    mysqli_stmt_close($stmt_cart);
-    mysqli_stmt_close($stmt_insert);
+    echo json_encode($response);
 } else {
     $response['value'] = 0;
-    $response['message'] = "Metode permintaan tidak valid";
+    $response['message'] = "Invalid request";
+    echo json_encode($response);
 }
-
-echo json_encode($response);
 
 ?>

@@ -17,19 +17,19 @@ $response = array();
 if ($result) {
     if ($result->num_rows > 0) {
         $response['isSuccess'] = true;
-        $response['message'] = "Berhasil Menampilkan Data My Favorite";
+        $response['message'] = "Berhasil Menampilkan Data Chart";
         $response['data'] = array();
         while ($row = $result->fetch_assoc()) {
             $response['data'][] = $row;
         }
     } else {
         $response['isSuccess'] = false;
-        $response['message'] = "Tidak Ada Data My Favorite";
+        $response['message'] = "Tidak Ada Data Chart";
         $response['data'] = null;
     }
 } else {
     $response['isSuccess'] = false;
-    $response['message'] = "Gagal Menampilkan Data My Favorite: " . $koneksi->error;
+    $response['message'] = "Gagal Menampilkan Data Chart: " . $koneksi->error;
     $response['data'] = null;
 }
 
