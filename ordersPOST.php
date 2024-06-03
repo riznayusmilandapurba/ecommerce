@@ -6,11 +6,11 @@ $response = array();
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id_user = $_POST['id_user'];
 
-    // Start a transaction
+
     mysqli_begin_transaction($koneksi);
 
     try {
-        // Fetch data from charts
+      
         $query = "SELECT * FROM charts WHERE id_user = ?";
         $stmt = mysqli_prepare($koneksi, $query);
         mysqli_stmt_bind_param($stmt, "i", $id_user);

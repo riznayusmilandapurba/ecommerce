@@ -5,10 +5,14 @@ header("Content-Type: application/json");
 
 include 'koneksi.php';
 
-$sql = "SELECT c.*, u.fullname as 'User', p.name as 'Nama Produk', p.description as Deskrispi, p.price as Harga
+$id_user = $_GET['id_user'];
+
+$sql = "SELECT c.*, u.fullname as 'User', p.*, k.name as 'kategori'
         FROM charts c 
         JOIN users u ON c.id_user = u.id_user
-        JOIN products p ON c.id_product = p.id_product";
+        JOIN products p ON c.id_product = p.id_product
+        JOIN category k ON p.id_category=k.id_category
+        WHERE c.id_user = $id_user";
 
 $result = $koneksi->query($sql);
 
