@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $email = $_POST['email'];
     $password = md5($_POST['password']);
 
-    $query = "SELECT * FROM users WHERE email = ? AND password = ? AND is_verified = 'verified'";
+    $query = "SELECT * FROM users WHERE email = ? AND password = ? AND verification_code IS NOT NULL AND is_verified = 'verified'";
     $stmt = $koneksi->prepare($query);
     $stmt->bind_param("ss", $email, $password);
     $stmt->execute();
@@ -24,7 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $response['address'] = $user['address'];
         $response['id_user'] = $user['id_user'];
 
-        // Memeriksa apakah pengguna adalah admin atau customer berdasarkan nilai role
         if ($user['role'] == '1') {
             $response['role'] = 'admin';
         } else if ($user['role'] == '2') {
@@ -36,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         echo json_encode($response);
     } else {
         $response['value'] = 0;
-        $response['message'] = "Gagal login. Pastikan email, password benar, dan akun sudah diverifikasi.";
+        $response['message'] = "Gagal login. Pastikan email, password benar, dan akun sudah diverifikasi serta kode OTP telah diterima.";
         echo json_encode($response);
     }
 
