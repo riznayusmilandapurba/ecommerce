@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $email = $_POST['email'];
     $password = md5($_POST['password']);
 
-    $query = "SELECT * FROM users WHERE email = ? AND password = ?";
+    $query = "SELECT * FROM users WHERE email = ? AND password = ? AND is_verified = 'verified'";
     $stmt = $koneksi->prepare($query);
     $stmt->bind_param("ss", $email, $password);
     $stmt->execute();
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         echo json_encode($response);
     } else {
         $response['value'] = 0;
-        $response['message'] = "Gagal login";
+        $response['message'] = "Gagal login. Pastikan email, password benar, dan akun sudah diverifikasi.";
         echo json_encode($response);
     }
 
